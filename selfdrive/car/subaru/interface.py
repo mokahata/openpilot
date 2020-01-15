@@ -45,7 +45,6 @@ class CarInterface(CarInterfaceBase):
     ret.safetyModel = car.CarParams.SafetyModel.subaru
 
     ret.enableCruise = True
-    ret.steerLimitAlert = True
 
     # force openpilot to fake the stock camera, since car harness is not supported yet and old style giraffe (with switches)
     # was never released
@@ -53,6 +52,7 @@ class CarInterface(CarInterfaceBase):
     ret.openpilotLongitudinalControl = False
 
     ret.steerRateCost = 0.7
+    ret.steerLimitTimer = 0.4
 
     if candidate in [CAR.IMPREZA]:
       ret.mass = 1568. + STD_CARGO_KG
@@ -72,7 +72,6 @@ class CarInterface(CarInterfaceBase):
       ret.centerToFront = ret.wheelbase * 0.5
       ret.steerRatio = 20           # learned, 14 stock
       ret.steerActuatorDelay = 0.07
-      ret.steerRateCost = 0.7
       ret.lateralTuning.pid.kf = 0.000043
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0., 10., 20.], [0., 10., 20.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.01, 0.05, 0.2], [0.003, 0.018, 0.025]]
@@ -105,7 +104,10 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpBP = [0., 5., 35.]
     ret.longitudinalTuning.kiV = [0.54, 0.36]
     ret.longitudinalTuning.kiBP = [0., 35.]
-
+    ret.stoppingControl = True
+    ret.directAccelControl = False
+    ret.startAccel = 0.0
+    ret.vEgoStopping = 0 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
     ret.rotationalInertia = scale_rot_inertia(ret.mass, ret.wheelbase)
@@ -146,6 +148,7 @@ class CarInterface(CarInterfaceBase):
     # timer resets when the user uses the steering wheel.
     ret.steeringPressed = self.CS.steer_override
     ret.steeringTorque = self.CS.steer_torque_driver
+    ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
 
     ret.gas = self.CS.pedal_gas / 255.
     ret.gasPressed = self.CS.user_gas_pressed

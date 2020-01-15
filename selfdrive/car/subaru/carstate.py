@@ -1,7 +1,7 @@
 import copy
 from common.kalman.simple_kalman import KF1D
 from selfdrive.config import Conversions as CV
-from selfdrive.can.parser import CANParser
+from opendbc.can.parser import CANParser
 from selfdrive.car.subaru.values import CAR, DBC, STEER_THRESHOLD
 
 def get_powertrain_can_parser(CP):
@@ -84,6 +84,10 @@ def get_camera_can_parser(CP):
       ("Signal3", "ES_LKAS_State", 0),
       ("LKAS_ENABLE_2", "ES_LKAS_State", 0),
       ("Signal4", "ES_LKAS_State", 0),
+      ("LKAS_Left_Line_Visible", "ES_LKAS_State", 0),
+      ("Signal6", "ES_LKAS_State", 0),
+      ("LKAS_Right_Line_Visible", "ES_LKAS_State", 0),
+      ("Signal7", "ES_LKAS_State", 0),
       ("FCW_Cont_Beep", "ES_LKAS_State", 0),
       ("FCW_Repeated_Beep", "ES_LKAS_State", 0),
       ("Throttle_Management_Activated", "ES_LKAS_State", 0),
@@ -172,7 +176,7 @@ class CarState():
     self.prev_left_blinker_on = self.left_blinker_on
     self.prev_right_blinker_on = self.right_blinker_on
     self.left_blinker_on = cp.vl["Dashlights"]['LEFT_BLINKER'] == 1
-    self.right_blinker_on = cp.vl["Dashlights"]['RIGHT_BLINKER'] == 1    
+    self.right_blinker_on = cp.vl["Dashlights"]['RIGHT_BLINKER'] == 1
     self.steer_torque_driver = cp.vl["Steering_Torque"]['Steer_Torque_Sensor']
     self.steer_torque_motor = cp.vl["Steering_Torque"]['Steer_Torque_Output']
     self.acc_active = cp.vl["CruiseControl"]['Cruise_Activated']
@@ -185,7 +189,6 @@ class CarState():
       cp.vl["BodyInfo"]['DOOR_OPEN_FL']])
 
     if self.car_fingerprint == CAR.IMPREZA:
-      self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]['Cruise_Set_Speed']
       self.seatbelt_unlatched = cp.vl["Dashlights"]['SEATBELT_FL'] == 1
       self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]["Cruise_Set_Speed"] * CV.MPH_TO_KPH
       self.steer_not_allowed = 0
