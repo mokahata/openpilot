@@ -209,9 +209,10 @@ class CarState():
 
       # 1 = main, 2 = set shallow, 3 = set deep, 4 = resume shallow, 5 = resume deep
       self.stock_set_speed = cp_cam.vl["ES_DashStatus"]["Cruise_Set_Speed"]
-
+      # keep set speed within stock subaru limits
       if self.acc_active and 145 < self.v_cruise_pcm < 30:
         self.v_cruise_pcm = self.stock_set_speed
+      
       if self.acc_active and self.button in [2,3,4,5] and self.button_count == 0:
         if self.button in [2, 4] and not self.button_prev in [3,5]:
           if self.button == 2:
@@ -227,17 +228,18 @@ class CarState():
           # round up to the nearest 10
           self.v_cruise_pcm = (int(self.v_cruise_pcm / 10) + 1) * 10
       #set cruise speed to current speed
-      if self.acc_active and not self.acc_active_prev and self.button not in [4, 5]:
+      if self.acc_active and not self.acc_active_prev:
         self.v_cruise_pcm = max(self.v_ego_raw * CV.MS_TO_KPH, 30)
       # round to the lowest multiple of 5 if set speed is not a multiple of 5
       if self.v_cruise_pcm % 5 != 0:
         self.v_cruise_pcm = (int(self.v_cruise_pcm / 5) - 1) * 5
-      # change set speed at 5hz instead of 100hz 
-      if self.button == self.button_prev and self.button_count <= 30:
+      # set speed delay at 2.5hz instead of 100hz to avoid unintended button pressing 
+      if self.button == self.button_prev and self.button_count <= 40:
         self.button_count =+ 1
       else:
         self.button_count = 0 
       self.button_prev = self.button
       self.acc_active_prev = self.acc_active
+      # set v_cruise_pcm to a reasonable value when main is off
       if not self.main_on:
         self.v_cruise_pcm = self.stock_set_speed

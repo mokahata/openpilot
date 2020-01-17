@@ -105,9 +105,13 @@ class CarController():
       # 1 = main, 2 = set shallow/slow down 1, 3 = set deep/slow down 10, 4 = resume shallow/speed up 1, 5 = resume deep/speed up 10
       fake_button = CS.button
       if enabled and (CS.v_ego_raw * CV.MS_TO_KPH) > 1 and (frame % 30) == 0:
-        target_speed = int(max(CS.v_cruise_pcm, 30))
+        # alter target speed
+        if actuators.brake > 0:
+          target_speed = min(max(CS.stock_set_speed - int(actuators.brake * 30), 30), 145)
+        else:
+          target_speed = CS.v_cruise_pcm
+
         # change stock speed to match openpilot set speed
-        # if stock is less than openpilot, press resume to raise speed
         if CS.stock_set_speed != target_speed:
           # if openpilot is higher than stock by 10 or greater
           if (target_speed - CS.stock_set_speed) >= 10:
@@ -119,8 +123,10 @@ class CarController():
           elif (CS.stock_set_speed - target_speed) >= 10:
             fake_button = 3
           # if openpilot is lower than stock by 10 or less
-          else:
+          elif (CS.stock_set_speed - target_speed) < 10:
             fake_button = 2
+          else:
+            fake_button = CS.button
 
       # disengage ACC when OP is disengaged
       if pcm_cancel_cmd:
