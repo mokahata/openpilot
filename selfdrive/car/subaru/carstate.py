@@ -43,7 +43,7 @@ def get_powertrain_can_parser(CP):
       ("CruiseControl", 20),
     ]
 
-  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY, CAR.WRX]:
     signals += [
       ("LKA_Lockout", "Steering_Torque", 0),
     ]
@@ -54,13 +54,6 @@ def get_powertrain_can_parser(CP):
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
 
 def get_camera_can_parser(CP):
-  signals = [
-    ("Cruise_Set_Speed", "ES_DashStatus", 0),
-  ]
-
-  checks = [
-    ("ES_DashStatus", 10),
-  ]
 
   if CP.carFingerprint == CAR.IMPREZA:
     signals += [
@@ -92,9 +85,14 @@ def get_camera_can_parser(CP):
       ("Traffic_light_Ahead", "ES_LKAS_State", 0),
       ("Right_Depart", "ES_LKAS_State", 0),
       ("Signal5", "ES_LKAS_State", 0),
+      ("Cruise_Set_Speed", "ES_DashStatus", 0),
     ]
 
-  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+    checks += [
+      ("ES_Dashstatus", 10),
+    ]
+
+  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY, CAR.WRX]:
     signals += [
       ("Brake_On", "ES_CruiseThrottle", 0),
       ("Button", "ES_CruiseThrottle", 0),
@@ -115,9 +113,18 @@ def get_camera_can_parser(CP):
       ("Standstill", "ES_CruiseThrottle", 0),
       ("Standstill_2", "ES_CruiseThrottle", 0),
       ("Throttle_Cruise", "ES_CruiseThrottle", 0),
-      ("Not_Ready_Startup", "ES_DashStatus", 0),
     ]
 
+  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+    signals += [
+      ("Not_Ready_Startup", "ES_DashStatus", 0),
+      ("Cruise_Set_Speed", "ES_DashStatus", 0),
+    ]
+
+    checks += [
+      ("ES_Dashstatus", 10),
+    ]
+    
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
 
 
@@ -155,7 +162,10 @@ class CarState():
     self.v_wheel_rl = cp.vl["Wheel_Speeds"]['RL'] * CV.KPH_TO_MS
     self.v_wheel_rr = cp.vl["Wheel_Speeds"]['RR'] * CV.KPH_TO_MS
 
-    self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]['Cruise_Set_Speed']
+    if self.car_fingerprint not CAR.WRX:
+      self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]['Cruise_Set_Speed']
+    else: 
+      self.v_cruise_pcm = 0
 
     v_wheel = (self.v_wheel_fl + self.v_wheel_fr + self.v_wheel_rl + self.v_wheel_rr) / 4.
     # Kalman filter, even though Subaru raw wheel speed is heaviliy filtered by default
@@ -199,7 +209,7 @@ class CarState():
       if cp.vl["Dash_State"]['Units'] == 1:
         self.v_cruise_pcm *= CV.MPH_TO_KPH
 
-    if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+    if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY, CAR.WRX]:
       self.seatbelt_unlatched = False # FIXME: stock ACC disengages on unlatch so this is fine for now, signal is currently missing
       self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]["Cruise_Set_Speed"]
       self.steer_not_allowed = cp.vl["Steering_Torque"]["LKA_Lockout"]

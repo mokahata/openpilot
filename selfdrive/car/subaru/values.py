@@ -6,6 +6,7 @@ class CAR:
   IMPREZA = "SUBARU IMPREZA LIMITED 2019"
   OUTBACK = "SUBARU OUTBACK 2015 - 2017"
   LEGACY = "SUBARU LEGACY 2015 - 2018"
+  WRX = "SUBARU WRX"
 
 FINGERPRINTS = {
   CAR.IMPREZA: [
@@ -61,12 +62,19 @@ FINGERPRINTS = {
   },
   # END LEGACY
   ],
+  CAR.WRX: [
+  # WRX Limited 2018 (vaprize8)
+  {
+    2: 8, 208: 8, 209: 4, 210: 8, 211: 7, 212: 8, 282: 8, 292: 8, 320: 8, 321: 8, 324: 8, 328: 8, 329: 8, 336: 2, 338: 8, 340: 7, 342: 8, 352: 8, 353: 8, 354: 8, 355: 8, 356: 8, 392: 8, 554: 8, 604: 8, 640: 8, 641: 8, 642: 8, 644: 8, 805: 8, 864: 8, 865: 8, 866: 8, 872: 8, 880: 8, 881: 8, 882: 8, 884: 8, 885: 8, 886: 2, 888: 8, 890: 8, 904: 8, 977: 8, 1632: 8, 1736: 8, 1743: 8, 1744: 8, 1745: 8, 1779: 8, 1785: 5, 1786: 5, 1787: 5, 1788: 8, 1872: 8, 1968: 8, 1976: 8, 2015: 8, 2016: 8, 2024: 8
+  },
+  ],
 }
 
 STEER_THRESHOLD = {
   CAR.IMPREZA: 80,
   CAR.OUTBACK: 600,
   CAR.LEGACY: 600,
+  CAR.WRX: 600,
 }
 
 ECU_FINGERPRINT = {
@@ -77,4 +85,5 @@ DBC = {
   CAR.IMPREZA: dbc_dict('subaru_global_2017', None),
   CAR.OUTBACK: dbc_dict('subaru_outback_2015_eyesight', None),
   CAR.LEGACY: dbc_dict('subaru_outback_2015_eyesight', None),
+  CAR.WRX: dbc_dict('subaru_outback_2015_eyesight', None),
 }
