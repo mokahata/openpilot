@@ -28,7 +28,7 @@ def create_steering_control(packer, car_fingerprint, apply_steer, frame, steer_s
 
   if car_fingerprint in (CAR.OUTBACK, CAR.LEGACY, CAR.WRX):
     #counts from 0 to 7 then back to 0
-    idx = (frame / steer_step) % 8
+    idx = ((frame // steer_step) % 8)
 
     values = {
       "Counter": idx,

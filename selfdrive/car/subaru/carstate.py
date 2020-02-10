@@ -55,6 +55,13 @@ def get_powertrain_can_parser(CP):
 
 def get_camera_can_parser(CP):
 
+  # this function generates lists for signal, messages and initial values
+  signals = [
+    # sig_name, sig_address, default
+  ]
+  checks = [
+  ]
+
   if CP.carFingerprint == CAR.IMPREZA:
     signals += [
       ("Counter", "ES_Distance", 0),
@@ -124,7 +131,7 @@ def get_camera_can_parser(CP):
     checks += [
       ("ES_Dashstatus", 10),
     ]
-    
+
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
 
 
@@ -162,7 +169,7 @@ class CarState():
     self.v_wheel_rl = cp.vl["Wheel_Speeds"]['RL'] * CV.KPH_TO_MS
     self.v_wheel_rr = cp.vl["Wheel_Speeds"]['RR'] * CV.KPH_TO_MS
 
-    if self.car_fingerprint not CAR.WRX:
+    if self.car_fingerprint not in [CAR.WRX]:
       self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]['Cruise_Set_Speed']
     else: 
       self.v_cruise_pcm = 0
@@ -217,4 +224,7 @@ class CarState():
       self.brake_hold = cp_cam.vl["ES_CruiseThrottle"]["Standstill"]
       self.close_distance = cp_cam.vl["ES_CruiseThrottle"]["CloseDistance"]
       self.es_accel_msg = copy.copy(cp_cam.vl["ES_CruiseThrottle"])
-      self.ready = not cp_cam.vl["ES_DashStatus"]["Not_Ready_Startup"]
+      if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+        self.ready = not cp_cam.vl["ES_DashStatus"]["Not_Ready_Startup"]
+      else:
+        self.ready = True
