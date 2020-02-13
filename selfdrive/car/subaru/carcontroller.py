@@ -10,7 +10,7 @@ class CarControllerParams():
   def __init__(self, car_fingerprint):
     self.STEER_MAX = 2047                # max_steer 2047
     self.STEER_STEP = 2                  # how often we update the steer cmd
-    self.STEER_DELTA_UP = 70             # torque increase per refresh, 0.68s to max
+    self.STEER_DELTA_UP = 60             # torque increase per refresh, 0.68s to max
     self.STEER_DELTA_DOWN = 70           # torque decrease per refresh
     if car_fingerprint == CAR.IMPREZA:
       self.STEER_DRIVER_ALLOWANCE = 60   # allowed driver torque before start limiting
@@ -74,25 +74,6 @@ class CarController():
         self.es_distance_cnt = CS.es_distance_msg["Counter"]
         can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg, pcm_cancel_cmd))
 
-    # button control
-    if (frame % 5) == 0 and self.car_fingerprint in (CAR.OUTBACK, CAR.LEGACY):
-      # 1 = main, 2 = set shallow, 3 = set deep, 4 = resume shallow, 5 = resume deep
-      # disengage ACC when OP is disengaged
-      if (pcm_cancel_cmd):
-        fake_button = 1
-      # turn main on if off and past start-up state
-      elif not CS.main_on and CS.ready:
-        fake_button = 1
-      else:
-        fake_button = CS.button
-
-      # unstick previous mocked button press
-      if fake_button != 0 and fake_button == self.fake_button_prev:
-        fake_button = 0
-      self.fake_button_prev = fake_button
-
-      can_sends.append(subarucan.create_es_throttle_control(self.packer, fake_button, CS.es_accel_msg))
-
     ### ALERTS ###
 
     if self.car_fingerprint == CAR.IMPREZA:
@@ -110,8 +91,7 @@ class CarController():
           target_speed = min(max(CS.stock_set_speed - int(actuators.brake * 30), 30), 145)
         else:
           target_speed = CS.v_cruise_pcm
-
-        # change stock speed to match openpilot set speed
+        # set ACC speed to target speed
         if CS.stock_set_speed != target_speed:
           # if openpilot is higher than stock by 10 or greater
           if (target_speed - CS.stock_set_speed) >= 10:
@@ -128,11 +108,11 @@ class CarController():
           else:
             fake_button = CS.button
 
-      # disengage ACC when OP is disengaged
+      ### DISENGAGE ###
       if pcm_cancel_cmd:
         fake_button = 1
 
-      # turn main on if off
+      # cancel and main share the same button. this prevents accidental disabling of stock acc 
       if not CS.main_on and CS.ready:
         fake_button = 1
 

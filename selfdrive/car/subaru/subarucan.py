@@ -74,8 +74,6 @@ def create_es_throttle_control(packer, fake_button, es_accel_msg):
 
   values = copy.copy(es_accel_msg)
   values["Button"] = fake_button
-  values["Standstill"] = 0
-  values["Standstill_2"] = 0
 
   values["Checksum"] = subaru_preglobal_checksum(packer, values, "ES_CruiseThrottle")
 
