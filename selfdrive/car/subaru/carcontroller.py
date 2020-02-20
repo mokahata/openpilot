@@ -83,25 +83,25 @@ class CarController():
 
     # button control
     if (frame % 5) == 0 and self.car_fingerprint in (CAR.OUTBACK, CAR.LEGACY):
-      # 1 = main, 2 = set shallow/slow down 1, 3 = set deep/slow down 10, 4 = resume shallow/speed up 1, 5 = resume deep/speed up 10
+      # 1 = main, 2 = set/slow down 1, 3 = set/slow down 10, 4 = resume/speed up 1, 5 = resume/speed up 10
       fake_button = CS.button
       if enabled and (CS.v_ego_raw * CV.MS_TO_KPH) > 1 and (frame % 30) == 0:
         # alter target speed
         if actuators.brake > 0:
-          target_speed = min(max(CS.stock_set_speed - int(actuators.brake * 30), 30), 145)
+          target_speed = min(max(CS.stock_set_speed - int(actuators.brake * 100), 30), 145)
         else:
           target_speed = CS.v_cruise_pcm
-        # set ACC speed to target speed
+        # set ACC speed to target speed if there is a difference
         if CS.stock_set_speed != target_speed:
-          # if openpilot is higher than stock by 10 or greater
-          if (target_speed - CS.stock_set_speed) >= 10:
-            fake_button = 5
+          # if speed is a multiple of 10
+          if (target_speed % 10 == 0):
+            if target_speed - CS.stock_set_speed > 1:
+              fake_button = 5
+            if CS.stock_set_speed - target_speed > 1:
+              fake_button = 3
           # if openpilot is set higher than stock between 1 and 10
           elif 1 <= (target_speed - CS.stock_set_speed) < 10:
             fake_button = 4
-          # if openpilot is lower than stock by 10 or greater
-          elif (CS.stock_set_speed - target_speed) >= 10:
-            fake_button = 3
           # if openpilot is lower than stock by 10 or less
           elif (CS.stock_set_speed - target_speed) < 10:
             fake_button = 2
@@ -112,7 +112,7 @@ class CarController():
       if pcm_cancel_cmd:
         fake_button = 1
 
-      # cancel and main share the same button. this prevents accidental disabling of stock acc 
+      # cancel and main share the same button. this prevents accidental disabling of stock acc and adds the benefit of not having to press the main button on start up
       if not CS.main_on and CS.ready:
         fake_button = 1
 
