@@ -14,7 +14,7 @@ class CarControllerParams():
       self.STEER_DRIVER_ALLOWANCE = 60   # allowed driver torque before start limiting
       self.STEER_DRIVER_MULTIPLIER = 10  # weight driver torque heavily
       self.STEER_DRIVER_FACTOR = 1       # from dbc
-    if car_fingerprint in (CAR.OUTBACK, CAR.LEGACY):
+    if car_fingerprint in (CAR.OUTBACK, CAR.LEGACY, CAR.FORESTER):
       self.STEER_DRIVER_ALLOWANCE = 600  # allowed driver torque before start limiting
       self.STEER_DRIVER_MULTIPLIER = 1   # weight driver torque heavily
       self.STEER_DRIVER_FACTOR = 1       # from dbc
@@ -73,7 +73,7 @@ class CarController():
         can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg, pcm_cancel_cmd))
 
     # button control
-    if (frame % 5) == 0 and self.car_fingerprint in (CAR.OUTBACK, CAR.LEGACY):
+    if (frame % 5) == 0 and self.car_fingerprint in (CAR.OUTBACK, CAR.LEGACY, CAR.FORESTER):
       # 1 = main, 2 = set shallow, 3 = set deep, 4 = resume shallow, 5 = resume deep
       # disengage ACC when OP is disengaged
       if (pcm_cancel_cmd):

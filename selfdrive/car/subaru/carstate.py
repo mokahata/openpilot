@@ -43,7 +43,7 @@ def get_powertrain_can_parser(CP):
       ("CruiseControl", 20),
     ]
 
-  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY, CAR.FORESTER]:
     signals += [
       ("LKA_Lockout", "Steering_Torque", 0),
     ]
@@ -55,15 +55,14 @@ def get_powertrain_can_parser(CP):
 
 def get_camera_can_parser(CP):
   signals = [
-    ("Cruise_Set_Speed", "ES_DashStatus", 0),
   ]
 
   checks = [
-    ("ES_DashStatus", 10),
   ]
 
   if CP.carFingerprint == CAR.IMPREZA:
     signals += [
+      ("Cruise_Set_Speed", "ES_DashStatus", 0),
       ("Counter", "ES_Distance", 0),
       ("Signal1", "ES_Distance", 0),
       ("Signal2", "ES_Distance", 0),
@@ -93,8 +92,10 @@ def get_camera_can_parser(CP):
       ("Right_Depart", "ES_LKAS_State", 0),
       ("Signal5", "ES_LKAS_State", 0),
     ]
-
-  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+    checks += [
+      ("ES_DashStatus", 10),
+    ]
+  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY, CAR.FORESTER]:
     signals += [
       ("Brake_On", "ES_CruiseThrottle", 0),
       ("Button", "ES_CruiseThrottle", 0),
@@ -115,7 +116,16 @@ def get_camera_can_parser(CP):
       ("Standstill", "ES_CruiseThrottle", 0),
       ("Standstill_2", "ES_CruiseThrottle", 0),
       ("Throttle_Cruise", "ES_CruiseThrottle", 0),
+    ]
+
+  if CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+    signals += [
       ("Not_Ready_Startup", "ES_DashStatus", 0),
+      ("Cruise_Set_Speed", "ES_DashStatus", 0),
+    ]
+
+    checks += [
+      ("ES_DashStatus", 10),
     ]
 
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
@@ -179,12 +189,18 @@ class CarState(CarStateBase):
       if cp.vl["Dash_State"]['Units'] == 1:
         self.v_cruise_pcm *= CV.MPH_TO_KPH
 
-    if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY]:
-      self.seatbelt_unlatched = False # FIXME: stock ACC disengages on unlatch so this is fine for now, signal is currently missing
-      self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]["Cruise_Set_Speed"]
+    if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY, CAR.FORESTER]:
+      self.seatbelt_unlatched = False # FIXME: stock ACC disengages on unlatch so this is fine for now, signal has not yet been found
       self.steer_not_allowed = cp.vl["Steering_Torque"]["LKA_Lockout"]
       self.button = cp_cam.vl["ES_CruiseThrottle"]["Button"]
       self.brake_hold = cp_cam.vl["ES_CruiseThrottle"]["Standstill"]
       self.close_distance = cp_cam.vl["ES_CruiseThrottle"]["CloseDistance"]
       self.es_accel_msg = copy.copy(cp_cam.vl["ES_CruiseThrottle"])
+      
+    if self.car_fingerprint in [CAR.FORESTER]:
+      self.v_cruise_pcm = 0
+      self.ready = True
+
+    if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY]:
+      self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]["Cruise_Set_Speed"]
       self.ready = not cp_cam.vl["ES_DashStatus"]["Not_Ready_Startup"]

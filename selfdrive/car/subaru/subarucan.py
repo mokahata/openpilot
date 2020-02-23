@@ -26,7 +26,7 @@ def create_steering_control(packer, car_fingerprint, apply_steer, frame, steer_s
     }
     values["Checksum"] = subaru_checksum(packer, values, 0x122)
 
-  if car_fingerprint in (CAR.OUTBACK, CAR.LEGACY):
+  if car_fingerprint in (CAR.OUTBACK, CAR.LEGACY, CAR.FORESTER):
     #counts from 0 to 7 then back to 0
     idx = (frame / steer_step) % 8
 
@@ -38,14 +38,6 @@ def create_steering_control(packer, car_fingerprint, apply_steer, frame, steer_s
     values["Checksum"] = subaru_preglobal_checksum(packer, values, "ES_LKAS")
 
   return packer.make_can_msg("ES_LKAS", 0, values)
-
-def create_steering_status(packer, car_fingerprint, apply_steer, frame, steer_step):
-
-  if car_fingerprint == CAR.IMPREZA:
-    values = {}
-    values["Checksum"] = subaru_checksum(packer, {}, 0x322)
-
-  return packer.make_can_msg("ES_LKAS_State", 0, values)
 
 def create_es_distance(packer, es_distance_msg, pcm_cancel_cmd):
 
