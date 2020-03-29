@@ -77,6 +77,14 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatioRear = 0.
       ret.centerToFront = ret.wheelbase * 0.4
 
+    elif candidate == CAR.SUBURBAN:
+      ret.minEnableSpeed = -1. # engage speed is decided by pcm
+      ret.mass = 4353. * CV.LB_TO_KG + STD_CARGO_KG
+      ret.wheelbase = 2.86
+      ret.steerRatio = 14.4  #end to end is 13.46
+      ret.steerRatioRear = 0.
+      ret.centerToFront = ret.wheelbase * 0.4
+
     elif candidate == CAR.BUICK_REGAL:
       ret.minEnableSpeed = 18 * CV.MPH_TO_MS
       ret.mass = 3779. * CV.LB_TO_KG + STD_CARGO_KG # (3849+3708)/2
@@ -102,6 +110,7 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 14.6   # it's 16.3 without rear active steering
       ret.steerRatioRear = 0. # TODO: there is RAS on this car!
       ret.centerToFront = ret.wheelbase * 0.465
+      
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
