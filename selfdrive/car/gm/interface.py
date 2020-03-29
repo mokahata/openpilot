@@ -161,7 +161,7 @@ class CarInterface(CarInterfaceBase):
 
     events = self.create_common_events(ret)
 
-    if self.CS.car_fingerprint in SUPERCRUISE_CARS:
+    if self.CS.car_fingerprint in [SUPERCRUISE_CARS, CAR.SUBURBAN]:
       if ret.cruiseState.enabled and not self.cruise_enabled_prev:
         events.append(create_event('pcmEnable', [ET.ENABLE]))
       if not ret.cruiseState.enabled:

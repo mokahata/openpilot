@@ -6,7 +6,7 @@ from opendbc.can.parser import CANParser
 from selfdrive.car.interfaces import CarStateBase
 from selfdrive.car.gm.values import DBC, CAR, AccState, CanBus, \
                                     CruiseButtons, is_eps_status_ok, \
-                                    STEER_THRESHOLD, SUPERCRUISE_CARS
+                                    STEER_THRESHOLD, SUPERCRUISE_CARS, CAR
 
 
 class CarState(CarStateBase):
@@ -53,7 +53,7 @@ class CarState(CarStateBase):
     ret.leftBlinker = pt_cp.vl["BCMTurnSignals"]['TurnSignals'] == 1
     ret.rightBlinker = pt_cp.vl["BCMTurnSignals"]['TurnSignals'] == 2
 
-    if self.car_fingerprint in SUPERCRUISE_CARS:
+    if self.car_fingerprint in [SUPERCRUISE_CARS, CAR.SUBURBAN]:
       self.park_brake = False
       ret.cruiseState.available = False
       ret.espDisabled = False
@@ -109,7 +109,7 @@ class CarState(CarStateBase):
       signals += [
         ("RegenPaddle", "EBCMRegenPaddle", 0),
       ]
-    if CP.carFingerprint in SUPERCRUISE_CARS:
+    if CP.carFingerprint in [SUPERCRUISE_CARS, CAR.SUBURBAN]:
       signals += [
         ("ACCCmdActive", "ASCMActiveCruiseControlStatus", 0)
       ]
