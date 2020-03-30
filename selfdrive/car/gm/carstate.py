@@ -36,7 +36,7 @@ def get_powertrain_can_parser(CP, canbus):
     signals += [
       ("RegenPaddle", "EBCMRegenPaddle", 0),
     ]
-  if CP.carFingerprint in SUPERCRUISE_CARS:
+  if CP.carFingerprint in [SUPERCRUISE_CARS, CAR.SUBURBAN]:
     signals += [
       ("ACCCmdActive", "ASCMActiveCruiseControlStatus", 0)
     ]
@@ -101,7 +101,7 @@ class CarState(CarStateBase):
     self.left_blinker_on = pt_cp.vl["BCMTurnSignals"]['TurnSignals'] == 1
     self.right_blinker_on = pt_cp.vl["BCMTurnSignals"]['TurnSignals'] == 2
 
-    if self.car_fingerprint in SUPERCRUISE_CARS:
+    if self.car_fingerprint in [SUPERCRUISE_CARS, CAR.SUBURBAN]:
       self.park_brake = False
       self.main_on = False
       self.acc_active = pt_cp.vl["ASCMActiveCruiseControlStatus"]['ACCCmdActive']
