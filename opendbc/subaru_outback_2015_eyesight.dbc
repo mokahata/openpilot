@@ -332,6 +332,16 @@ BO_ 1786 NEW_MSG_9: 8 XXX
  SG_ NEW_SIGNAL_2 : 8|16@1+ (1,0) [0|15] "" XXX
  SG_ Counter : 0|4@1+ (1,0) [0|255] "" XXX
 
+BO_ 604 BSD_RCTA: 8 XXX
+ SG_ Counter : 0|3@1+ (1,0) [0|1] "" XXX
+ SG_ State : 5|1@1+ (1,0) [0|1] "" XXX
+ SG_ R_ADJACENT : 32|1@1+ (1,0) [0|1] "" XXX
+ SG_ L_ADJACENT : 33|1@1+ (1,0) [0|1] "" XXX
+ SG_ R_APPROACHING : 42|1@1+ (1,0) [0|1] "" XXX
+ SG_ L_APPROACHING : 43|1@1+ (1,0) [0|1] "" XXX
+ SG_ R_RCTA : 46|1@1+ (1,0) [0|1] "" XXX
+ SG_ L_RCTA : 47|1@1+ (1,0) [0|1] "" XXX
+
 
 
 
@@ -369,3 +379,8 @@ CM_ SG_ 880 Steering_Voltage_Flat "receives later than 371";
 CM_ SG_ 880 NEW_SIGNAL_1 "0 in 2017";
 CM_ SG_ 880 NEW_SIGNAL_4_2017 "1 in 2017";
 CM_ SG_ 880 NEW_SIGNAL_5_2017 "1 in 2017";
+CM_ SG_ 604 R_RCTA "Rear cross traffic alert, only when in R gear";
+CM_ SG_ 604 L_RCTA "Rear cross traffic alert, only when in R gear";
+CM_ SG_ 604 L_APPROACHING "Faster car approaching in far left lane";
+CM_ SG_ 604 R_APPROACHING "Faster car approaching in far right lane";
+VAL_ 328 Gear 0 "N" 1 "D" 2 "D" 3 "D" 4 "D" 5 "D" 6 "D" 14 "R" 15 "P" ;
