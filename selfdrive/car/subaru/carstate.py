@@ -1,4 +1,5 @@
 import copy
+from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 from selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
@@ -25,6 +26,7 @@ def get_powertrain_can_parser(CP):
     ("DOOR_OPEN_FL", "BodyInfo", 1),
     ("DOOR_OPEN_RR", "BodyInfo", 1),
     ("DOOR_OPEN_RL", "BodyInfo", 1),
+    ("Gear", "Transmission", 0),
   ]
 
   checks = [
@@ -137,6 +139,8 @@ class CarState(CarStateBase):
     # initialize can parser
     self.left_blinker_cnt = 0
     self.right_blinker_cnt = 0
+    can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
+    self.shifter_values = can_define.dv["Transmission"]['Gear']
 
   def update(self, cp, cp_cam):
 
@@ -167,6 +171,9 @@ class CarState(CarStateBase):
 
     self.right_blinker_cnt = 50 if cp.vl["Dashlights"]['RIGHT_BLINKER'] else max(self.right_blinker_cnt - 1, 0)
     self.right_blinker_on = self.right_blinker_cnt > 0
+
+    can_gear = int(cp.vl["Transmission"]['Gear'])
+    self.gearShifter = self.parse_gear_shifter(self.shifter_values.get(can_gear, None))
 
     self.steer_torque_driver = cp.vl["Steering_Torque"]['Steer_Torque_Sensor']
     self.acc_active = cp.vl["CruiseControl"]['Cruise_Activated']
