@@ -102,7 +102,7 @@ Supported Cars
 | Lexus     | RX Hybrid 2016-19             | All               | Stock<sup>4</sup>| 0mph               | 0mph         |
 | Subaru    | Crosstrek 2018-19             | EyeSight          | Stock            | 0mph               | 0mph         |
 | Subaru    | Impreza 2019-20               | EyeSight          | Stock            | 0mph               | 0mph         |
-| Subaru    | Outback 2015-17               | EyeSight          | Stock            | 0mph               | 0mph         |
+| Subaru    | Outback 2015-18               | EyeSight          | Stock            | 0mph               | 0mph         |
 | Subaru    | Legacy 2015-17                | EyeSight          | Stock            | 0mph               | 0mph         |
 | Toyota    | Avalon 2016                   | TSS-P             | Stock<sup>4</sup>| 20mph<sup>5</sup>  | 0mph         |
 | Toyota    | Avalon 2017-18                | All               | Stock<sup>4</sup>| 20mph<sup>5</sup>  | 0mph         |
