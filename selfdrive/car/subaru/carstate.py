@@ -128,7 +128,7 @@ def get_camera_can_parser(CP):
       ("ES_DashStatus", 10),
     ]
 
-  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 1)
 
 
 class CarState(CarStateBase):
